@@ -134,7 +134,7 @@ class SubtitleGenerator:
                 print(f"Warning: Fallback text clip creation also failed: {str(e2)}")
                 return None
 
-    def add_subtitles_to_video_with_srt(self, video_path, srt_path, output_path="video_with_subtitles.mp4"):
+    def add_subtitles_to_video_with_srt(self, video_path, srt_path, output_path="video_with_subtitles.mp4", style_config=None):
         """
         Add subtitles to video using external SRT file with FFmpeg.
         This method burns the subtitles directly into the video using FFmpeg.
@@ -143,6 +143,7 @@ class SubtitleGenerator:
             video_path (str): Path to the input video
             srt_path (str): Path to the SRT subtitle file
             output_path (str): Path to save the output video
+            style_config (dict): Optional configuration for subtitle styling
             
         Returns:
             str: Path to the output video with subtitles
@@ -151,12 +152,36 @@ class SubtitleGenerator:
 
         import subprocess
 
+        # Default style
+        style_str = "FontSize=24,PrimaryColour=&Hffffff&,OutlineColour=&H000000&,Outline=2"
+        
+        # Override with custom style if provided
+        if style_config:
+            # Map frontend style keys to FFmpeg style keys
+            # Front: fontSize, fontColor, outlineColor, outlineWidth, marginV
+            font_size = style_config.get('fontSize', 24)
+            
+            # Convert hex colors (#RRGGBB) to FFmpeg format (&HBBGGRR&)
+            def hex_to_ffmpeg(hex_color):
+                if not hex_color or not hex_color.startswith('#'):
+                    return "&Hffffff&"
+                hex_color = hex_color.lstrip('#')
+                r, g, b = hex_color[0:2], hex_color[2:4], hex_color[4:6]
+                return f"&H{b}{g}{r}&"
+
+            primary_color = hex_to_ffmpeg(style_config.get('fontColor', '#ffffff'))
+            outline_color = hex_to_ffmpeg(style_config.get('outlineColor', '#000000'))
+            outline_width = style_config.get('outlineWidth', 2)
+            margin_v = style_config.get('marginV', 10)
+            
+            style_str = f"FontSize={font_size},PrimaryColour={primary_color},OutlineColour={outline_color},Outline={outline_width},MarginV={margin_v}"
+
         # Use FFmpeg to burn subtitles into video
         cmd = [
             'ffmpeg',
             '-i', video_path,
             '-vf',
-            f"subtitles='{srt_path}':force_style='FontSize=24,PrimaryColour=&Hffffff&,OutlineColour=&H000000&,Outline=2'",
+            f"subtitles='{srt_path}':force_style='{style_str}'",
             '-c:a', 'copy',  # Copy audio without re-encoding
             '-y',  # Overwrite output file if it exists
             output_path
