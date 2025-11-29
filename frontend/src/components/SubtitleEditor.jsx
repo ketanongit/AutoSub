@@ -12,8 +12,20 @@ const SubtitleEditor = ({ videoUrl, videoFilename, originalName }) => {
     fontColor: '#ffffff',
     outlineColor: '#000000',
     outlineWidth: 2,
-    marginV: 30
+    marginV: 30,
+    fontFamily: 'Arial'
   })
+  
+  const FONT_OPTIONS = [
+    { name: 'Arial', value: 'Arial', type: 'system' },
+    { name: 'Times New Roman', value: 'Times New Roman', type: 'system' },
+    { name: 'Verdana', value: 'Verdana', type: 'system' },
+    { name: 'Rubik', value: 'Rubik', type: 'google' },
+    { name: 'Roboto', value: 'Roboto', type: 'google' },
+    { name: 'Montserrat', value: 'Montserrat', type: 'google' },
+    { name: 'Poppins', value: 'Poppins', type: 'google' },
+    { name: 'Lato', value: 'Lato', type: 'google' },
+  ]
   const [processing, setProcessing] = useState(false)
   
   const videoRef = useRef(null)
@@ -134,7 +146,7 @@ const SubtitleEditor = ({ videoUrl, videoFilename, originalName }) => {
                     -${styles.outlineWidth}px ${styles.outlineWidth}px 0 ${styles.outlineColor},
                     ${styles.outlineWidth}px ${styles.outlineWidth}px 0 ${styles.outlineColor}
                   `,
-                  fontFamily: 'Arial, sans-serif',
+                  fontFamily: styles.fontFamily,
                   fontWeight: 'bold'
                 }}
               >
@@ -197,6 +209,20 @@ const SubtitleEditor = ({ videoUrl, videoFilename, originalName }) => {
             </h3>
             
             <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-xs text-slate-400">Font Family</label>
+                <select 
+                  value={styles.fontFamily}
+                  onChange={(e) => setStyles({...styles, fontFamily: e.target.value})}
+                  className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none text-white"
+                >
+                  {FONT_OPTIONS.map(font => (
+                    <option key={font.value} value={font.value} style={{ fontFamily: font.value }}>
+                      {font.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <div className="space-y-2">
                 <label className="text-xs text-slate-400">Font Size</label>
                 <input 

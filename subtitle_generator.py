@@ -173,15 +173,16 @@ class SubtitleGenerator:
             outline_color = hex_to_ffmpeg(style_config.get('outlineColor', '#000000'))
             outline_width = style_config.get('outlineWidth', 2)
             margin_v = style_config.get('marginV', 10)
+            font_name = style_config.get('fontFamily', 'Arial')
             
-            style_str = f"FontSize={font_size},PrimaryColour={primary_color},OutlineColour={outline_color},Outline={outline_width},MarginV={margin_v}"
+            style_str = f"FontSize={font_size},PrimaryColour={primary_color},OutlineColour={outline_color},Outline={outline_width},MarginV={margin_v},FontName={font_name}"
 
         # Use FFmpeg to burn subtitles into video
         cmd = [
             'ffmpeg',
             '-i', video_path,
             '-vf',
-            f"subtitles='{srt_path}':force_style='{style_str}'",
+            f"subtitles='{srt_path.replace(os.sep, '/')}':force_style='{style_str}'",
             '-c:a', 'copy',  # Copy audio without re-encoding
             '-y',  # Overwrite output file if it exists
             output_path
