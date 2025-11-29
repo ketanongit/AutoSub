@@ -8,9 +8,7 @@ import sys
 import uuid
 from typing import Optional, Dict, Any
 
-# Add parent directory to path to import subtitle_generator
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from subtitle_generator import SubtitleGenerator
+from .subtitle_generator import SubtitleGenerator
 
 app = FastAPI(title="AutoSub API")
 
